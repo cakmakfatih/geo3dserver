@@ -2,9 +2,9 @@ import express = require("express");
 
 const router = express.Router();
 
-router.get("/map", (req, res) => {
+router.get("/test", (req, res) => {
     res.json({
-        name: "Fatih"
+        test: "success"
     });
 });
 
