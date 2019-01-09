@@ -77613,8 +77613,8 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 class Editor extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     constructor(props) {
         super(props);
+        this.changeValues = this.changeValues.bind(this);
         this.state = {
-            builder: null,
             venueOutline: ""
         };
     }
@@ -77622,22 +77622,11 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
         return __awaiter(this, void 0, void 0, function* () {
             let data = yield fetch(`/api/v1/get_test_data`).then(re => re.json());
             let b = new _builder_Builder__WEBPACK_IMPORTED_MODULE_2__["default"](data, this.refs["3d-view-container"]);
-            this.setState({
-                builder: b
-            });
+            this.builder = b;
         });
     }
-    flipHexString(hexValue, hexDigits) {
-        var h = hexValue.substr(0, 2);
-        for (var i = 0; i < hexDigits; ++i) {
-            h += hexValue.substr(2 + (hexDigits - 1 - i) * 2, 2);
-        }
-        return h;
-    }
-    hexToFloat(hex) {
-        var s = hex >> 31 ? -1 : 1;
-        var e = (hex >> 23) & 0xFF;
-        return s * (hex & 0x7fffff | 0x800000) * 1.0 / Math.pow(2, 23) * Math.pow(2, (e - 127));
+    changeValues() {
+        this.builder.setVenueColor(parseInt(this.venueOutline, 16));
     }
     render() {
         return (react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_components_Layout__WEBPACK_IMPORTED_MODULE_3__["default"], { flexDirection: "row" },
@@ -77647,8 +77636,8 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("i", { className: "fas fa-chevron-left" })),
                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { className: "form-group" },
                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("label", { htmlFor: "", className: "label-default" }, "Venue Outline"),
-                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { type: "text", maxLength: 6, placeholder: "Hex", className: "inp-default" }))),
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { className: "btn-default", onClick: () => this.state.builder.setVenueColor(0xff2020) }, "Save")),
+                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { type: "text", maxLength: 6, placeholder: "Hex", className: "inp-default", onChange: (e) => this.venueOutline = e.target.value }))),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { className: "btn-default", onClick: this.changeValues }, "Save")),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { ref: "3d-view-container", id: "geo3d-view-container" })));
     }
 }
