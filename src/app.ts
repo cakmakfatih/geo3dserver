@@ -8,6 +8,7 @@ app.set("port", process.env.PORT || 3000);
 app.use(express.static(path.join(__dirname, "views")));
 app.use(express.static(path.join(__dirname, "scripts")));
 app.use(express.static(path.join(__dirname, "data")));
+app.use(express.static(path.join(__dirname, "assets")));
 
 app.use('/api/v1/', api);
 

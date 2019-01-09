@@ -77370,12 +77370,14 @@ const OrbitControls = __webpack_require__(/*! three-orbit-controls */ "./node_mo
 class Builder {
     constructor(data, container) {
         this.data = data;
+        this.venueColor = 0x000000;
         this.render = this.render.bind(this);
         this.update = this.update.bind(this);
         this.viewLoop = this.viewLoop.bind(this);
         this.scene = new three__WEBPACK_IMPORTED_MODULE_0__["Scene"]();
-        this.camera = new three__WEBPACK_IMPORTED_MODULE_0__["PerspectiveCamera"](75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.renderer = new three__WEBPACK_IMPORTED_MODULE_0__["WebGLRenderer"]();
+        this.camera = new three__WEBPACK_IMPORTED_MODULE_0__["PerspectiveCamera"](75, window.innerWidth / window.innerHeight, 0.1, 100000);
+        this.renderer = new three__WEBPACK_IMPORTED_MODULE_0__["WebGLRenderer"]({ antialias: true });
+        this.renderer.shadowMap.enabled = true;
         this.renderer.setSize(container.getBoundingClientRect().width, window.innerHeight);
         container.appendChild(this.renderer.domElement);
         window.addEventListener('resize', () => {
@@ -77387,13 +77389,30 @@ class Builder {
         this.camera.position.y = 50;
         this.camera.position.x = 100;
         this.camera.lookAt(30, 40, 60);
-        this.processData();
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.addSkybox();
         this.viewLoop();
     }
-    processData() {
-        this.setOffsets();
-        this.data.features.forEach((i) => {
+    addSkybox() {
+        // to-do add skybox
+        let geometry = new three__WEBPACK_IMPORTED_MODULE_0__["BoxGeometry"](5000, 5000, 5000);
+        let textureLoader = new three__WEBPACK_IMPORTED_MODULE_0__["TextureLoader"]();
+        // https://api.mapbox.com/styles/v1/mapbox/light-v9/static/29.07107,41.00360,15.0,0,0/1280x1280?access_token=pk.eyJ1IjoiY2FrbWFrZmF0aWgiLCJhIjoiY2pxcGk1d3ZrMDFwYjQ5bzFqNncyYjl2NyJ9.MtGJZ74Cu-6R7K52rFrNeQ
+        let map = textureLoader.load("staticmap.png");
+        map.minFilter = three__WEBPACK_IMPORTED_MODULE_0__["LinearFilter"];
+        let mat = new three__WEBPACK_IMPORTED_MODULE_0__["MeshBasicMaterial"]({
+            side: three__WEBPACK_IMPORTED_MODULE_0__["DoubleSide"],
+            map: map
+        });
+        let cube = new three__WEBPACK_IMPORTED_MODULE_0__["Mesh"](geometry, mat);
+        cube.position.setY(2500);
+        this.scene.add(cube);
+    }
+    addLights() {
+        // to-do add lights
+    }
+    processData(data) {
+        data.features.forEach((i) => {
             switch (i.geometry.type) {
                 case "MultiPolygon":
                     this.addMultiPolygon(i);
@@ -77403,12 +77422,40 @@ class Builder {
             }
         });
     }
-    setOffsets() {
-        let coords = this.data.features.find((i) => typeof i.properties.DISPLAY_XY !== "undefined").properties.DISPLAY_XY.coordinates;
+    setOffsets(coords) {
         this.vectorGenerator = new _models_scaledvector_model__WEBPACK_IMPORTED_MODULE_1__["VectorGenerator"](undefined, coords[0], coords[1]);
     }
     setVenueColor(color) {
         this.venue.material.color.setHex(color);
+    }
+    add3DPolygon(i) {
+        let material = new three__WEBPACK_IMPORTED_MODULE_0__["MeshBasicMaterial"]({
+            color: this.venueColor
+        });
+        let sidesMaterial = new three__WEBPACK_IMPORTED_MODULE_0__["MeshBasicMaterial"]({ color: 0xffffff, side: three__WEBPACK_IMPORTED_MODULE_0__["DoubleSide"] });
+        let shape = new three__WEBPACK_IMPORTED_MODULE_0__["Shape"]();
+        let startCoords = this.vectorGenerator.generateVector(i.geometry.coordinates[0][0][0]);
+        shape.moveTo(startCoords.x, startCoords.z);
+        let extrudeSettings = {
+            steps: 2,
+            depth: 4,
+            bevelEnabled: true,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelSegments: 1
+        };
+        i.geometry.coordinates.forEach((j) => {
+            j.forEach((k) => {
+                k.slice(1).forEach((q) => {
+                    let scaledVector = this.vectorGenerator.generateVector(q);
+                    shape.lineTo(scaledVector.x, scaledVector.z);
+                });
+            });
+        });
+        let geometry = new three__WEBPACK_IMPORTED_MODULE_0__["ExtrudeBufferGeometry"](shape, extrudeSettings);
+        let mesh = new three__WEBPACK_IMPORTED_MODULE_0__["Mesh"](geometry, [material, sidesMaterial]);
+        mesh.rotation.x += -Math.PI / 2;
+        this.scene.add(mesh);
     }
     addMultiPolygon(i) {
         let material = new three__WEBPACK_IMPORTED_MODULE_0__["LineBasicMaterial"]({
@@ -77425,6 +77472,7 @@ class Builder {
             });
         });
         this.venue = new three__WEBPACK_IMPORTED_MODULE_0__["Line"](geometry, material);
+        this.venue.position.setY(1);
         this.scene.add(this.venue);
     }
     viewLoop() {
@@ -77614,19 +77662,19 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     constructor(props) {
         super(props);
         this.saveChanges = this.saveChanges.bind(this);
-        this.state = {
-            venueOutline: ""
-        };
     }
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
-            let data = yield fetch(`/api/v1/get_test_data`).then(re => re.json());
+            let data = yield fetch(`/api/v1/get_venue`).then(re => re.json());
             let b = new _builder_Builder__WEBPACK_IMPORTED_MODULE_2__["default"](data, this.refs["3d-view-container"]);
             this.builder = b;
+            let offsetCoords = data.features.find((i) => typeof i.properties.DISPLAY_XY !== "undefined").properties.DISPLAY_XY.coordinates;
+            this.builder.setOffsets(offsetCoords);
+            this.builder.processData(data);
         });
     }
     saveChanges() {
-        this.builder.setVenueColor(parseInt(this.venueOutline, 16));
+        this.venueOutline.length === 6 ? this.builder.setVenueColor(parseInt(this.venueOutline, 16)) : null;
     }
     render() {
         return (react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_components_Layout__WEBPACK_IMPORTED_MODULE_3__["default"], { flexDirection: "row" },
