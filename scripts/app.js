@@ -77613,7 +77613,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 class Editor extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     constructor(props) {
         super(props);
-        this.changeValues = this.changeValues.bind(this);
+        this.saveChanges = this.saveChanges.bind(this);
         this.state = {
             venueOutline: ""
         };
@@ -77625,7 +77625,7 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
             this.builder = b;
         });
     }
-    changeValues() {
+    saveChanges() {
         this.builder.setVenueColor(parseInt(this.venueOutline, 16));
     }
     render() {
@@ -77637,7 +77637,7 @@ class Editor extends react__WEBPACK_IMPORTED_MODULE_0__["Component"] {
                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { className: "form-group" },
                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("label", { htmlFor: "", className: "label-default" }, "Venue Outline"),
                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("input", { type: "text", maxLength: 6, placeholder: "Hex", className: "inp-default", onChange: (e) => this.venueOutline = e.target.value }))),
-                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { className: "btn-default", onClick: this.changeValues }, "Save")),
+                react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("button", { className: "btn-default", onClick: this.saveChanges }, "Save")),
             react__WEBPACK_IMPORTED_MODULE_0__["createElement"]("div", { ref: "3d-view-container", id: "geo3d-view-container" })));
     }
 }
