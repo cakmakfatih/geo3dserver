@@ -1,7 +1,7 @@
 {
    "projectName":"example",
    "projectDescription":"test",
-   "id":"fe99fda4-7d7c-e27f-3c87-a37c8c08fee2",
+   "id":"8716e7c9-9425-4e72-e5cf-247fc32f6481",
    "coordinates":{
       "lat":29.07106688973935,
       "lon":41.00360414208543
@@ -134,8 +134,22 @@
          },
          "type3d":"3D_POLYGON",
          "name":"VENUE",
-         "id":"8ea3bec8-3176-151e-da4e-f51ad8fd3e71",
-         "level":0
+         "id":"e7102707-7dfc-1f85-ad68-f0b6c764cb10",
+         "level":0,
+         "settings":{
+            "extrude":{
+               "steps":2,
+               "depth":8,
+               "bevelEnabled":true,
+               "bevelThickness":1,
+               "bevelSize":1,
+               "bevelSegments":1
+            },
+            "material":{
+               "sideColor":"0xff0000",
+               "color":"0xffffff"
+            }
+         }
       }
    ]
 }
