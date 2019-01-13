@@ -3,7 +3,7 @@ import fs = require("fs");
 
 const router = express.Router();
 
-router.get("/example_data", (req, res) => {
+router.get("/example_geo3d", (req, res) => {
     fs.readFile("data/example.geo3d", "utf-8", (err, data) => {
         if(!err) {
             res.json({
