@@ -7,8 +7,7 @@ router.get("/example_geo3d", (req, res) => {
     fs.readFile("data/example.geo3d", "utf-8", (err, data) => {
         if(!err) {
             res.json({
-                status: "success",
-                data: JSON.parse(data)
+                ...JSON.parse(data)
             });
         } else {
             res.sendStatus(404);

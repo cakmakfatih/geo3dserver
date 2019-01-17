@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\scripts",
+    "\\scripts\\geo3d",
+    "\\scripts\\geo3d\\src",
+    "\\scripts\\geo3d\\src\\builder",
+    "\\scripts\\geo3d\\src\\layouts",
+    "\\src"
+  ],
+  "SelectedNode": "\\scripts\\geo3d\\src\\layouts\\Editor.tsx",
+  "PreviewInSolutionExplorer": true
+}
